@@ -5,7 +5,7 @@ Relatorio
 		enquadramento
 		objetivos do trabalho
 	2 - Caso de estudo
-		empresa fisíca(nome, dominio, DNS, funcionarios fisicos)
+		empresa fisíca(nome, dominio-DNS, funcionarios fisicos)
 		diagrama de rede
 		divisao de rede(rede interna, rede DMZ, rede externa)
 		end. IP/mascara
@@ -59,12 +59,12 @@ Rede Externa:
 
 Rede DMZ (192.168.20.0/24):
 	Firewall (interface DMZ): 192.168.20.1
-	Servidor web: 192.168.20.10
-	Servidor de Email: 192.168.20.20
-	Servidor DNS: 192.168.20.30
+	Servidor DNS: 192.168.20.10
+	Servidor web: 192.168.20.20
+	Servidor de Email: 192.168.20.30
 	
 Rede Interna (192.168.10.0/24):
 	Firewall (interface interna): 192.168.10.1
-	Servidor de Arquivos: 192.168.10.10
-	Servidor de Banco de Dados: 192.168.10.20 
+	servidor ficheros: 192.168.10.10
+	Servidor de Basedados: 192.168.10.20 
 
