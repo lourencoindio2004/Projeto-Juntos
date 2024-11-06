@@ -1,0 +1,70 @@
+Relatorio 
+	Capa
+	Indice
+	1 - Introducao
+		enquadramento
+		objetivos do trabalho
+	2 - Caso de estudo
+		empresa fisíca(nome, dominio, DNS, funcionarios fisicos)
+		diagrama de rede
+		divisao de rede(rede interna, rede DMZ, rede externa)
+		end. IP/mascara
+		servico email 
+			explicar 
+			contas(usernames / password)
+		serviso monitorizadas
+			explicar
+			NA610S
+		servico de acesso remoto
+			explicar
+			apresentar o software (openssh)
+			quais as ???
+			chaves
+			rsa
+			tamanho
+			armazenar chave
+			quem vai usar
+	3 - servicos de rede seguros
+		servico de nomes
+			explicar (referencias)
+			apresentar o software(bind)
+			quais as zonas e zonas ??? (tabelas)
+			configuracao seguros (DNSSEC + servidor secudario(SLAUE) + acl)
+				como e que isto reforca a seguranca
+		servico web
+			explicar (web)
+			apresentar software (Apache)
+			virtual Host (pelo menos 2)
+			seguranca (https, autemticacao basica, force https)
+	4 - Conclusoes
+		??? do planeamento
+		trabalho puturo
+			o que falta fazer
+			
+			
+Na entrega 1 devem escrever um documento PDF que inclua:
+
+• Apresentação do caso de estudo: uma empresa, indústria, escola.... e os respetivos intervenientes: clientes, utilizadores, redes, servidores e serviços;
+• Apresentação dos serviços que irão instalar e configurar no cenário;
+• Apresentação de um possível desenho da solução;
+• Apresentação das opções de segurança que irão permitir aumentar a segurança dos serviços;
+• Apresentação de como irá ser realizada a gestão, manutenção e administração dos serviços e dos sistemas operativos;
+
+
+
+IPS
+
+Rede Externa:
+	Ip Externo do Firewall: 203.0.113.1
+
+Rede DMZ (192.168.20.0/24):
+	Firewall (interface DMZ): 192.168.20.1
+	Servidor web: 192.168.20.10
+	Servidor de Email: 192.168.20.20
+	Servidor DNS: 192.168.20.30
+	
+Rede Interna (192.168.10.0/24):
+	Firewall (interface interna): 192.168.10.1
+	Servidor de Arquivos: 192.168.10.10
+	Servidor de Banco de Dados: 192.168.10.20 
+
