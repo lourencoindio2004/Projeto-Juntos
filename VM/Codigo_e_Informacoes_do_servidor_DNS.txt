@@ -15,7 +15,7 @@ network:
   version: 2
   
   
-sudo hostnamectl set-hostname dns.about.pt
+sudo hostnamectl set-hostname dns.aboutt.pt
 sudo nano /etc/hosts 
 	127.0.1.1 dns.about.pt
 sudo reboot
