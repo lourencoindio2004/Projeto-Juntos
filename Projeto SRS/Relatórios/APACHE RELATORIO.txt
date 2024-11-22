@@ -1,0 +1,117 @@
+IP: 192.168.20.20
+Hostname: webserver.about.pt
+Netplan:
+
+network:
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses:
+        - 192.168.20.20/24
+      gateway4: 192.168.85.2
+      nameservers:
+        addresses:
+          - 192.168.20.10
+  version: 2
+
+Hosts:
+
+127.0.0.1 localhost
+127.0.1.1 webserver.about.pt
+
+sudo apt-get update
+sudo apt-get install apache2 w3m
+
+Index: 
+
+<html>
+  <head>
+    <title>Empresa About</title>
+  </head>
+  <body>
+    <h1>Bem-vindo ao nosso Site da Empresa About</h1>
+    <p>A <strong>Empresa About</strong> é uma organização dedicada a fornecer soluções inovadoras para seus clientes em>    <p>Com uma equipa de profissionais altamente capacitados, buscamos constantemente melhorar a qualidade dos nossos p>    <p>Explore nosso site para conhecer mais sobre nossos serviços, soluções e como podemos ajudar a sua empresa a cres>  </body>
+</html>
+
+about.conf:
+
+<VirtualHost *:80>
+  ServerName www.about.pt
+  DocumentRoot /var/www/about
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName www.about.pt
+  DocumentRoot /var/www/about
+
+  SSLEngine on
+  SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+</VirtualHost>
+
+<Directory /var/www/about>
+  AllowOverride All
+  Require all granted
+</Directory>
+
+
+/----------------------------------------------------------/
+
+sudo apachectl configtest
+sudo a2ensite about
+sudo systemctl reload apache2
+
+sudo a2enmod ssl
+sudo systemctl restart apache2
+
+
+/----------------------------------------------------------/
+
+
+sudo mkdir /var/www2
+
+sudo wget https://www.dropbox.com/s/35q365tthpez1og/intranet.zip?dl=1 -O intranet.zip
+
+sudo apt install unzip
+sudo unzip intranet.zip
+
+sudo cp /etc/apache2/sites-available/srs.conf /etc/apache2/sites-available/intranet.conf 
+
+sudo htpasswd -c /etc/apache2/password_file admin
+
+
+intranet.conf:
+
+<VirtualHost *:80>
+  ServerName intranet.about.pt
+  DocumentRoot /var/www2/intranet
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName intranet.about.pt
+  DocumentRoot /var/www2/intranet
+
+  SSLEngine on
+  SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+</VirtualHost>
+
+<Directory /var/www2/intranet>
+  AllowOverride All
+  AuthUserFile /etc/apache2/password_file
+  AuthName "Zona Protegida"
+  AuthType Basic
+
+<RequireAll>
+    Require ip 192.168.199.1
+    Require user admin
+</RequireAll>
+
+
+/----------------------------------------------------------/
+
+sudo apachectl configtest
+sudo a2ensite intranet
+sudo systemctl reload apache2
