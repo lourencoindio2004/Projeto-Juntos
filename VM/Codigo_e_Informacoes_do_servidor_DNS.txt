@@ -1,0 +1,105 @@
+Netplan：
+
+network:
+  ethernets:
+    ens33:
+      dhcp4: false
+      addresses:
+      - 192.168.20.10/24
+      routes:
+      - to: 0.0.0.0/0
+        via: 192.168.20.2
+      nameservers:
+        addresses:
+        - 192.168.20.2
+  version: 2
+  
+  
+sudo hostnamectl set-hostname dns.about.pt
+sudo nano /etc/hosts 
+	127.0.1.1 dns.about.pt
+sudo reboot
+
+sudo apt-get update
+sudo apt-get install bind9
+
+sudo nano /etc/bind/named.conf.options 
+	forwarders {
+                172.22.1.101;
+                172.22.1.102;
+         };
+         
+         dnssec-validation no;
+         
+named-checkconf /etc/bind/named.conf.options
+sudo service named restart
+
+sudo nano /etc/bind/named.conf.local
+	zone "about.pt" {
+	        type master;
+	        file "/etc/bind/db.about.pt";
+	};
+	
+	zone "20.168.192.in-addr.arpa" {
+	        type master;
+	        file "/etc/bind/db.192.168.20";
+	};
+
+sudo cp /etc/bind/db.empty /etc/bind/db.about.pt
+sudo nano /etc/bind/db.about.pt
+	@       IN      SOA     about.pt antonio.about.pt (
+	...
+	@       IN      NS      about.pt
+	dns     IN      A       192.168.20.10
+	gateway IN      A       192.168.20.2
+	web     IN      A       192.168.20.20
+	mai     IN      A       192.168.20.30
+
+sudo cp /etc/bind/db.127 /etc/bind/db.192.168.20
+sudo nano /etc/bind/db.192.168.20
+	@       IN      SOA     dns.about.pt antonio.about.pt (
+    	...
+	@       IN      NS      dns.about.pt
+	1.0.0   IN      PTR     dns.about.pt
+	
+named-checkzone about.pt /etc/bind/db.about.pt
+named-checkzone 20.168.192.in-addr.arpa /etc/bind/db.192.168.20
+sudo mkdir /etc/bind/keys
+cd /etc/bind/keys
+sudo dnssec-keygen -a  ECDSAP256SHA256 -n ZONE about.pt
+	ZSK
+		Kabout.pt.+013+23038.key  
+		Kabout.pt.+013+23038.private
+
+sudo dnssec-keygen -a ECDSAP256SHA256 -f KSK -n ZONE about.pt
+	KSK
+		Kabout.pt.+013+10905.key
+		Kabout.pt.+013+10905.private
+		
+sudo nano /etc/bind/db.about.pt
+	$INCLUDE "/etc/bind/keys/Kabout.pt.+013+23038.key" #ZSKkey
+	$INCLUDE "/etc/bind/keys/Kabout.pt.+013+10905.key" #KSKkey
+
+named-checkzone about.pt /etc/bind/db.about.pt
+sudo dnssec-signzone -o about.pt -N INCREMENT -t -k /etc/bind/keys/Kabout.pt.+013+10905.private /etc/bind/db.about.pt  /etc/bind/keys/Kabout.pt.+013+23038.key
+	NOTA: A primeiro chave é a KSK e a segunda é a ZSK
+	
+sudo nano /etc/bind/named.conf.local
+	zone "about.pt" {
+	        type master;
+	        file "/etc/bind/db.about.pt.signed";
+	};	
+
+ sudo service named restart
+  sudo service named status
+sudo nano /etc/bind/named.conf.options
+	acl "permitidos" {
+     	   192.168.20.20;
+     	   192.168.20.30;
+	};
+	options {
+        directory "/var/cache/bind";
+
+        allow-recursion { permitidos; };
+
+         allow-transfer { none; };
