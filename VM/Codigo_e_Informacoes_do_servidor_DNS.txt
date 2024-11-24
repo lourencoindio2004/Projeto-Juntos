@@ -63,6 +63,8 @@ sudo nano /etc/bind/db.192.168.20
 	@       IN      NS      dns.aboutt.pt.
 	10      IN      PTR     dns.aboutt.pt.
 	2       IN      PTR     gateway.aboutt.pt.	
+	20       IN      PTR     gateway.aboutt.pt。
+	30       IN      PTR     mail.aboutt.pt.
 	
 named-checkzone aboutt.pt /etc/bind/db.aboutt.pt
 named-checkzone 20.168.192.in-addr.arpa /etc/bind/db.192.168.20
