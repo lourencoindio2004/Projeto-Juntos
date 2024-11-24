@@ -17,7 +17,7 @@ network:
   
 sudo hostnamectl set-hostname dns.aboutt.pt
 sudo nano /etc/hosts 
-	127.0.1.1 dns.about.pt
+	127.0.1.1 dns.aboutt.pt
 sudo reboot
 
 sudo apt-get update
@@ -48,9 +48,9 @@ sudo nano /etc/bind/named.conf.local
 
 sudo cp /etc/bind/db.empty /etc/bind/db.aboutt.pt
 sudo nano /etc/bind/db.aboutt.pt
-	@       IN      SOA     aboutt.pt antonio.aboutt.pt (
+	@       IN      SOA     dns.aboutt.pt antonio.aboutt.pt (
 	...
-	@       IN      NS      aboutt.pt
+	@       IN      NS      dns.aboutt.pt
 	dns     IN      A       192.168.20.10
 	gateway IN      A       192.168.20.2
 	web     IN      A       192.168.20.20
@@ -70,20 +70,20 @@ sudo mkdir /etc/bind/keys
 cd /etc/bind/keys
 sudo dnssec-keygen -a  ECDSAP256SHA256 -n ZONE aboutt.pt
 	ZSK
-		Kaboutt.pt.+013+46209.key  
-		Kaboutt.pt.+013+46209.private
+		Kaboutt.pt.+013+03434.key  
+		Kaboutt.pt.+013+03434.private
 
 sudo dnssec-keygen -a ECDSAP256SHA256 -f KSK -n ZONE aboutt.pt
 	KSK
-		Kaboutt.pt.+013+13241.key
-		Kaboutt.pt.+013+13241.private
+		Kaboutt.pt.+013+02026.key
+		Kaboutt.pt.+013+02026.private
 		
 sudo nano /etc/bind/db.aboutt.pt
-	$INCLUDE "/etc/bind/keys/Kaboutt.pt.+013+46209.key" #ZSKkey
-	$INCLUDE "/etc/bind/keys/Kaboutt.pt.+013+13241.key" #KSKkey
+	$INCLUDE "/etc/bind/keys/Kaboutt.pt.+013+03434.key" #ZSKkey
+	$INCLUDE "/etc/bind/keys/Kaboutt.pt.+013+02026.key" #KSKkey
 
 named-checkzone aboutt.pt /etc/bind/db.aboutt.pt
-sudo dnssec-signzone -o about.pt -N INCREMENT -t -k /etc/bind/keys/Kabout.pt.+013+10905.private /etc/bind/db.about.pt  /etc/bind/keys/Kabout.pt.+013+23038.key
+sudo dnssec-signzone -o aboutt.pt -N INCREMENT -t -k /etc/bind/keys/Kaboutt.pt.+013+02026.private /etc/bind/db.aboutt.pt /etc/bind/keys/Kaboutt.pt.+013+03434.key
 	NOTA: A primeiro chave é a KSK e a segunda é a ZSK
 	
 sudo nano /etc/bind/named.conf.local
@@ -92,8 +92,8 @@ sudo nano /etc/bind/named.conf.local
 	        file "/etc/bind/db.aboutt.pt.signed";
 	};	
 
- sudo service named restart
-  sudo service named status
+sudo service named restart
+sudo service named status
 sudo nano /etc/bind/named.conf.options
 	acl "permitidos" {
      	   192.168.20.20;
