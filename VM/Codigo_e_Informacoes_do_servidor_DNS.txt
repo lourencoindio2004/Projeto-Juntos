@@ -15,9 +15,9 @@ network:
   version: 2
   
   
-sudo hostnamectl set-hostname dns.about.pt
+sudo hostnamectl set-hostname dns.aboutt.pt
 sudo nano /etc/hosts 
-	127.0.1.1 dns.about.pt
+	127.0.1.1 dns.aboutt.pt
 sudo reboot
 
 sudo apt-get update
@@ -27,6 +27,7 @@ sudo nano /etc/bind/named.conf.options
 	forwarders {
                 172.22.1.101;
                 172.22.1.102;
+                8.8.8.8;
          };
          
          dnssec-validation no;
@@ -35,9 +36,9 @@ named-checkconf /etc/bind/named.conf.options
 sudo service named restart
 
 sudo nano /etc/bind/named.conf.local
-	zone "about.pt" {
+	zone "aboutt.pt" {
 	        type master;
-	        file "/etc/bind/db.about.pt";
+	        file "/etc/bind/db.aboutt.pt";
 	};
 	
 	zone "20.168.192.in-addr.arpa" {
@@ -45,53 +46,56 @@ sudo nano /etc/bind/named.conf.local
 	        file "/etc/bind/db.192.168.20";
 	};
 
-sudo cp /etc/bind/db.empty /etc/bind/db.about.pt
-sudo nano /etc/bind/db.about.pt
-	@       IN      SOA     about.pt antonio.about.pt (
+sudo cp /etc/bind/db.empty /etc/bind/db.aboutt.pt
+sudo nano /etc/bind/db.aboutt.pt
+	@       IN      SOA     dns.aboutt.pt antonio.aboutt.pt (
 	...
-	@       IN      NS      about.pt
+	@       IN      NS      dns.aboutt.pt
 	dns     IN      A       192.168.20.10
 	gateway IN      A       192.168.20.2
 	web     IN      A       192.168.20.20
-	mai     IN      A       192.168.20.30
+	mail     IN      A       192.168.20.30
 
 sudo cp /etc/bind/db.127 /etc/bind/db.192.168.20
 sudo nano /etc/bind/db.192.168.20
-	@       IN      SOA     dns.about.pt antonio.about.pt (
+	@       IN      SOA     dns.aboutt.pt antonio.aboutt.pt (
     	...
-	@       IN      NS      dns.about.pt
-	1.0.0   IN      PTR     dns.about.pt
+	@       IN      NS      dns.aboutt.pt.
+	10      IN      PTR     dns.aboutt.pt.
+	2       IN      PTR     gateway.aboutt.pt.	
+	20       IN      PTR     gateway.aboutt.pt。
+	30       IN      PTR     mail.aboutt.pt.
 	
-named-checkzone about.pt /etc/bind/db.about.pt
+named-checkzone aboutt.pt /etc/bind/db.aboutt.pt
 named-checkzone 20.168.192.in-addr.arpa /etc/bind/db.192.168.20
 sudo mkdir /etc/bind/keys
 cd /etc/bind/keys
-sudo dnssec-keygen -a  ECDSAP256SHA256 -n ZONE about.pt
+sudo dnssec-keygen -a  ECDSAP256SHA256 -n ZONE aboutt.pt
 	ZSK
-		Kabout.pt.+013+23038.key  
-		Kabout.pt.+013+23038.private
+		Kaboutt.pt.+013+03434.key  
+		Kaboutt.pt.+013+03434.private
 
-sudo dnssec-keygen -a ECDSAP256SHA256 -f KSK -n ZONE about.pt
+sudo dnssec-keygen -a ECDSAP256SHA256 -f KSK -n ZONE aboutt.pt
 	KSK
-		Kabout.pt.+013+10905.key
-		Kabout.pt.+013+10905.private
+		Kaboutt.pt.+013+02026.key
+		Kaboutt.pt.+013+02026.private
 		
-sudo nano /etc/bind/db.about.pt
-	$INCLUDE "/etc/bind/keys/Kabout.pt.+013+23038.key" #ZSKkey
-	$INCLUDE "/etc/bind/keys/Kabout.pt.+013+10905.key" #KSKkey
+sudo nano /etc/bind/db.aboutt.pt
+	$INCLUDE "/etc/bind/keys/Kaboutt.pt.+013+03434.key" #ZSKkey
+	$INCLUDE "/etc/bind/keys/Kaboutt.pt.+013+02026.key" #KSKkey
 
-named-checkzone about.pt /etc/bind/db.about.pt
-sudo dnssec-signzone -o about.pt -N INCREMENT -t -k /etc/bind/keys/Kabout.pt.+013+10905.private /etc/bind/db.about.pt  /etc/bind/keys/Kabout.pt.+013+23038.key
+named-checkzone aboutt.pt /etc/bind/db.aboutt.pt
+sudo dnssec-signzone -o aboutt.pt -N INCREMENT -t -k /etc/bind/keys/Kaboutt.pt.+013+02026.private /etc/bind/db.aboutt.pt /etc/bind/keys/Kaboutt.pt.+013+03434.key
 	NOTA: A primeiro chave é a KSK e a segunda é a ZSK
 	
 sudo nano /etc/bind/named.conf.local
-	zone "about.pt" {
+	zone "aboutt.pt" {
 	        type master;
-	        file "/etc/bind/db.about.pt.signed";
+	        file "/etc/bind/db.aboutt.pt.signed";
 	};	
 
- sudo service named restart
-  sudo service named status
+sudo service named restart
+sudo service named status
 sudo nano /etc/bind/named.conf.options
 	acl "permitidos" {
      	   192.168.20.20;
@@ -103,3 +107,15 @@ sudo nano /etc/bind/named.conf.options
         allow-recursion { permitidos; };
 
          allow-transfer { none; };
+
+
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
+
+Maquina Virtual:
+	modar primeiro Nic para bridge
+	crescentei nova nic para NAT
+
+ sudo nano /etc/netplan/00-installer-config.yaml
+	ens37:
+      dhcp4: true
