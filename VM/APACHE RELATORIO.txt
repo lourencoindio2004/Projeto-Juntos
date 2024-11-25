@@ -8,7 +8,7 @@ network:
       dhcp4: no
       addresses:
         - 192.168.20.20/24
-      gateway4: 192.168.85.2
+      gateway4: 192.168.20.2
       nameservers:
         addresses:
           - 192.168.20.10
@@ -23,7 +23,7 @@ sudo apt-get update
 sudo apt-get install apache2 w3m
 
 cd /var/www
-sudo mkdir about
+sudo mkdir aboutt
 sudo touch index.html
 
 Index: 
@@ -120,18 +120,18 @@ Index:
 /----------------------------------------------------------/
 
 cd /etc/apache2/sites-available
-sudo touch about.conf
+sudo touch aboutt.conf
 
-about.conf:
+aboutt.conf:
 
 <VirtualHost *:80>
   ServerName www.aboutt.pt
-  DocumentRoot /var/www/about
+  DocumentRoot /var/www/aboutt
 </VirtualHost>
 
 <VirtualHost *:443>
   ServerName www.aboutt.pt
-  DocumentRoot /var/www/about
+  DocumentRoot /var/www/aboutt
 
   SSLEngine on
   SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -139,7 +139,7 @@ about.conf:
 
 </VirtualHost>
 
-<Directory /var/www/about>
+<Directory /var/www/aboutt>
   AllowOverride All
   Require all granted
 </Directory>
@@ -157,50 +157,3 @@ sudo systemctl restart apache2
 
 /----------------------------------------------------------/
 
-
-sudo mkdir /var/www2
-
-sudo wget https://www.dropbox.com/s/35q365tthpez1og/intranet.zip?dl=1 -O intranet.zip
-
-sudo apt install unzip
-sudo unzip intranet.zip
-
-sudo cp /etc/apache2/sites-available/about.conf /etc/apache2/sites-available/intranet.conf 
-
-sudo htpasswd -c /etc/apache2/password_file admin
-
-
-intranet.conf:
-
-<VirtualHost *:80>
-  ServerName intranet.aboutt.pt
-  DocumentRoot /var/www2/intranet
-</VirtualHost>
-
-<VirtualHost *:443>
-  ServerName intranet.aboutt.pt
-  DocumentRoot /var/www2/intranet
-
-  SSLEngine on
-  SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
-  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
-
-</VirtualHost>
-
-<Directory /var/www2/intranet>
-  AllowOverride All
-  AuthUserFile /etc/apache2/password_file
-  AuthName "Zona Protegida"
-  AuthType Basic
-
-<RequireAll>
-    Require ip 192.168.20.1
-    Require user admin
-</RequireAll>
-
-
-/----------------------------------------------------------/
-
-sudo apachectl configtest
-sudo a2ensite intranet
-sudo systemctl reload apache2
