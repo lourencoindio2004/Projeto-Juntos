@@ -1,5 +1,5 @@
 IP: 192.168.20.20
-Hostname: webserver.about.pt
+Hostname: webserver
 Netplan:
 
 network:
@@ -17,31 +17,120 @@ network:
 Hosts:
 
 127.0.0.1 localhost
-127.0.1.1 webserver.about.pt
+127.0.1.1 www.aboutt.pt
 
 sudo apt-get update
 sudo apt-get install apache2 w3m
+
+cd /var/www
+sudo mkdir about
+sudo touch index.html
 
 Index: 
 
 <html>
   <head>
     <title>Empresa About</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        color: #333;
+        text-align: center;
+      }
+      header {
+        background-color: #1a1a1a;
+        color: white;
+        padding: 20px;
+      }
+      header h1 {
+        font-size: 2.5em;
+        margin: 0;
+      }
+      section {
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 800px;
+        text-align: left;
+      }
+      footer {
+        background-color: #1a1a1a;
+        color: white;
+        padding: 10px 0;
+        margin-top: 20px;
+      }
+      .team-member {
+        margin: 10px 0;
+      }
+      .team-member h3 {
+        margin: 5px 0;
+      }
+    </style>
   </head>
   <body>
-    <h1>Bem-vindo ao nosso Site da Empresa About</h1>
-    <p>A <strong>Empresa About</strong> é uma organização dedicada a fornecer soluções inovadoras para seus clientes em>    <p>Com uma equipa de profissionais altamente capacitados, buscamos constantemente melhorar a qualidade dos nossos p>    <p>Explore nosso site para conhecer mais sobre nossos serviços, soluções e como podemos ajudar a sua empresa a cres>  </body>
+    <header>
+      <h1>Bem-vindo ao Site da Empresa About</h1>
+    </header>
+
+    <section>
+      <p>
+        A <strong>Empresa About</strong> é uma organização dedicada a fornecer soluções inovadoras para seus clientes.
+      </p>
+      <p>
+        Com uma equipa de profissionais altamente capacitados, buscamos constantemente melhorar a qualidade dos nossos
+        produtos e serviços.
+      </p>
+      <p>
+        Explore nosso site para conhecer mais sobre nossos serviços, soluções e como podemos ajudar a sua empresa a
+        crescer.
+      </p>
+    </section>
+
+    <section>
+      <h2>A Nossa Empresa</h2>
+      <p>
+        A Empresa About é reconhecida pela excelência em seus projetos e pelo comprometimento com a satisfação de seus clientes.
+        Nosso objetivo é criar um impacto positivo em todas as áreas que atendemos.
+      </p>
+    </section>
+
+    <section>
+      <h2>Conheça a Nossa Equipa</h2>
+      <div class="team">
+        <div class="team-member">
+          <h3>Diogo Garcia</h3>
+        </div>
+        <div class="team-member">
+          <h3>Lourenço Índio</h3>
+        </div>
+        <div class="team-member">
+          <h3>Zhi Ruan</h3>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2024 Empresa About. Todos os direitos reservados.</p>
+    </footer>
+  </body>
 </html>
+
+/----------------------------------------------------------/
+
+cd /etc/apache2/sites-available
+sudo touch about.conf
 
 about.conf:
 
 <VirtualHost *:80>
-  ServerName www.about.pt
+  ServerName www.aboutt.pt
   DocumentRoot /var/www/about
 </VirtualHost>
 
 <VirtualHost *:443>
-  ServerName www.about.pt
+  ServerName www.aboutt.pt
   DocumentRoot /var/www/about
 
   SSLEngine on
@@ -76,7 +165,7 @@ sudo wget https://www.dropbox.com/s/35q365tthpez1og/intranet.zip?dl=1 -O intrane
 sudo apt install unzip
 sudo unzip intranet.zip
 
-sudo cp /etc/apache2/sites-available/srs.conf /etc/apache2/sites-available/intranet.conf 
+sudo cp /etc/apache2/sites-available/about.conf /etc/apache2/sites-available/intranet.conf 
 
 sudo htpasswd -c /etc/apache2/password_file admin
 
@@ -84,12 +173,12 @@ sudo htpasswd -c /etc/apache2/password_file admin
 intranet.conf:
 
 <VirtualHost *:80>
-  ServerName intranet.about.pt
+  ServerName intranet.aboutt.pt
   DocumentRoot /var/www2/intranet
 </VirtualHost>
 
 <VirtualHost *:443>
-  ServerName intranet.about.pt
+  ServerName intranet.aboutt.pt
   DocumentRoot /var/www2/intranet
 
   SSLEngine on
@@ -105,7 +194,7 @@ intranet.conf:
   AuthType Basic
 
 <RequireAll>
-    Require ip 192.168.199.1
+    Require ip 192.168.20.1
     Require user admin
 </RequireAll>
 
