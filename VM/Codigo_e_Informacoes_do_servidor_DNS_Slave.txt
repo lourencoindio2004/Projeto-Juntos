@@ -1,0 +1,42 @@
+sudo hostnamectl set-hostname dns2.aboutt.pt
+sudo nano /etc/hosts 
+	127.0.1.1 dns2.aboutt.pt
+sudo reboot
+
+sudo apt-get update
+sudo apt-get install bind9
+
+Netplan：
+
+network:
+  ethernets:
+    ens33:
+      dhcp4: false
+      addresses:
+      - 192.168.20.15/24
+      routes:
+      - to: 0.0.0.0/0
+        via: 192.168.20.2
+      nameservers:
+        addresses:
+        - 192.168.20.2
+  version: 2
+  
+ 
+sudo nano /etc/bind/named.conf.local
+	zone "aboutt.pt" {
+	        type slave;
+	        file "/var/cache/bind/db.aboutt.pt.signed";
+	        masters {192.168.20.10}
+	};
+	
+	zone "20.168.192.in-addr.arpa" {
+	        type slave;
+	        file "/var/cache/bind/db.192.168.20";
+	        masters {192.168.20.10}
+	};
+	
+sudo mkdir -p /var/cache/bind - premicoes para /var/cache/bind/
+sudo chown bind:bind /var/cache/bind
+sudo named-checkconf
+sudo systemctl restart bind9

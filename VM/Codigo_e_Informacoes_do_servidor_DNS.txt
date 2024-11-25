@@ -63,7 +63,7 @@ sudo nano /etc/bind/db.192.168.20
 	@       IN      NS      dns.aboutt.pt.
 	10      IN      PTR     dns.aboutt.pt.
 	2       IN      PTR     gateway.aboutt.pt.	
-	20       IN      PTR     gateway.aboutt.pt。
+	20       IN      PTR     webserver.aboutt.pt。
 	30       IN      PTR     mail.aboutt.pt.
 	
 named-checkzone aboutt.pt /etc/bind/db.aboutt.pt
@@ -119,3 +119,24 @@ Maquina Virtual:
  sudo nano /etc/netplan/00-installer-config.yaml
 	ens37:
       dhcp4: true
+      
+Configuracao no DNS principal Para Servidor Slave：
+sudo nano /etc/bind/named.conf.local
+	 zone "aboutt.pt" {
+                type master;
+                file "/etc/bind/db.aboutt.pt.signed";
+                allow-transfer { 192.168.20.15; };
+                also-notify {192.168.20.15}
+                notify yes;
+        };
+
+        zone "20.168.192.in-addr.arpa" {
+                type master;
+                file "/etc/bind/db.192.168.20";
+                allow-transfer { 192.168.20.15; };
+                also-notify {192.168.20.15}
+                notify yes;
+        };
+        
+        
+verifiacar o erro do dig @192.168.10.15 saltitao
