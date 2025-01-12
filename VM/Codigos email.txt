@@ -46,6 +46,26 @@ RCPT TO: <diogo@email.aboutt.pt>
 
 _________________________________________________
 
+sudo apt-get update
+sudo apt-get install dovecot-imapd
+
+telnet 192.168.20.30 143
+
+? LOGIN lourenco lourenco
+
+? LIST "" * 
+
+? SELECT INBOX
+
+? FETCH 1:*
+
+? FETCH 1:* full
+
+? LOGOUT
+
+openssl s_client -connect 192.168.20.30:993
+
+
 Conectar ao servidor POP3
 telnet 192.168.20.30 110
 
