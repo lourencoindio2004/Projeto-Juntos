@@ -1,0 +1,136 @@
+IP: 192.168.20.40
+Hostname: nagios
+Netplan:
+
+network:
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses:
+        - 192.168.20.40/24
+      gateway4: 192.168.20.2
+      nameservers:
+        addresses:
+          - 192.168.20.10
+	  - 192.168.20.15
+  version: 2
+
+Hosts:
+
+127.0.0.1 localhost
+127.0.1.1 nagios.aboutt.pt
+
+sudo apt-get update
+sudo apt-get install nagios4
+
+- General mail configuration type: Site Internet
+- System mail name: nagios.aboutt.pt
+
+sudo a2enmod cgi
+sudo a2enmod cgid
+
+sudo systemctl restart nagios4
+
+URL: http://192.168.20.40/nagios4
+
+apache.cfg:
+
+define host {
+    use                 linux-server
+    host_name           apache-server
+    alias               Servidor Apache
+    address             192.168.20.20
+}
+
+define service {
+    use                 generic-service
+    host_name           apache-server
+    service_description HTTP
+    check_command       check_http
+}
+
+define service {
+    use                 generic-service
+    host_name           apache-server
+    service_description HTTPS
+    check_command       check_https
+}
+
+
+dns.cfg:
+
+define host {
+    use                 linux-server
+    host_name           dns-server
+    alias               Servidor DNS
+    address             192.168.20.10
+}
+
+define service {
+    use                 generic-service
+    host_name           dns-server
+    service_description DNS
+    check_command       check_dns!google.com
+}
+
+mail.cfg:
+
+define host {
+    use                 linux-server
+    host_name           mail-server
+    alias               Servidor de Email
+    address             192.168.20.30
+}
+
+define service {
+    use                 generic-service
+    host_name           mail-server
+    service_description SMTP
+    check_command       check_smtp
+}
+
+define service {
+    use                 generic-service
+    host_name           mail-server
+    service_description IMAP
+    check_command       check_imap
+}
+
+define service {
+    use                 generic-service
+    host_name           mail-server
+    service_description POP3
+    check_command       check_pop
+}
+
+mysql.cfg:
+
+define host {
+    use                 linux-server
+    host_name           database-server
+    alias               Servidor de Banco de Dados
+    address             192.168.20.60
+}
+
+define service {
+    use                 generic-service
+    host_name           database-server
+    service_description MySQL
+    check_command       check_mysql!nagios_user!nagios_password
+}
+
+opnsense.cfg:
+
+define host {
+    use                 generic-host
+    host_name           opnsense-firewall
+    alias               Firewall OPNsense
+    address             192.168.20.50
+}
+
+define service {
+    use                 generic-service
+    host_name           opnsense-firewall
+    service_description PING
+    check_command       check_ping!100.0,20%!500.0,60%
+}
