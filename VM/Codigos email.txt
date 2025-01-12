@@ -1,0 +1,76 @@
+sudo apt-get update
+sudo apt-get install dovecot-core
+
+ativa a autenticação SASL
+sudo postconf -e 'smtpd_sasl_auth_enable = yes'
+
+utilizar o Dovecot para autenticação SASL
+sudo postconf -e 'smtpd_sasl_type = dovecot' 
+
+define o caminho para realizar o socket de comunicação entre o dovecot e o postfix
+sudo postconf -e 'smtpd_sasl_path = private/auth'
+
+define o domínio local para o qual a autenticação será aplicada. 
+sudo postconf -e 'smtpd_sasl_local_domain = $myhostname'
+
+define as restrições (ACL) para os remetentes (senders). (1)Rejeita os senders que não correspondem a utilizadores autenticados, (2) permite os senders de utilizadores autenticados, e (3) rejeita tudo o resto. 
+sudo postconf -e 'smtpd_sender_restrictions = reject_sender_login_mismatch, permit_sasl_authenticated, reject'
+
+impede a autenticação anónima. Todos devem autenticar-se
+sudo postconf -e 'smtpd_sasl_security_options = noanonymous'
+
+define o mapeamento para associar os utilizadores autenticados aos respectivos senders. 
+sudo postconf -e 'smtpd_sender_login_maps = hash:/etc/postfix/smtpd_sender_login_maps'
+
+sudo nano /etc/postfix/smtpd_sender_login_maps (Adicione a este ficheiro vazio a correspondência entre o username do serviço de e-mail e o username do sistema operativo. )
+
+um arquivo de mapeamento para o Postfix: 
+
+cd /etc/postfix
+sudo postmap smtpd_sender_login_maps
+
+Procure pela linha 106 "# Postfix smtp-auth" e edite as linhas seguintes, de forma a ficar assim: 
+unix_listener /var/spool/postfix/private/auth {
+
+    mode = 0666
+    user = postfix
+    group = postfix
+  }
+
+Estas linhas irão ativar um socket de comunicação entre o Dovecot e o Postfix, no qual o utilizador e grupo do postfix terá privilégios para o utilizar. 
+
+
+
+
+Conexão ao servidor SMTP:
+telnet email.aboutt.pt 25
+
+Identificação do cliente SMTP:
+EHLO email.aboutt.pt
+
+Início do envio do email (remetente):
+MAIL FROM: <lourenco@email.aboutt.pt>
+
+Especificação do destinatário:
+RCPT TO: <diogo@email.aboutt.pt>
+
+_________________________________________________
+
+Conectar ao servidor POP3
+telnet 192.168.20.30 110
+
+Informar o nome de utilizador:
+USER alice
+Informar a senha:
+
+PASS alice_password
+Verificar o número de mensagens no servidor
+STAT
+
+Listar mensagens no servidor
+LIST
+
+Usar o comando RETR seguido do número da mensagem:
+RETR 1
+
+___________________________________________________
